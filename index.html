@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCA Time Table Management </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <img src="https://gsck.ac.in/html/egovpolicy/image005.png" alt="G. S. Science, Arts & Commerce College, Khamgaon" class="college-img" id="collegeBannerImg" onerror="this.src='https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=800'">
+    <h1>G. S. Science, Arts & Commerce College, Khamgaon</h1>
+    <p>Department of Computer Science & Application</p>
+    <b>BCA Time Table Management</b>
+</header>
+
+<div class="container">
+
+    <div id="home" class="card">
+        <h2>Select User</h2>
+        <div class="menu">
+            <button onclick="showStudent()">🎓 Student</button>
+            <button onclick="showTeacher()">👨‍🏫 Teacher</button>
+            <button onclick="showAdmin()">🔐 Admin</button>
+        </div>
+    </div>
+
+    <div id="student" class="card hidden">
+        <h2>🎓 Student Portal</h2>
+        <label>Student Name</label>
+        <input id="studentName" placeholder="Enter your name">
+
+        <label>Year</label>
+        <select id="studentYear" onchange="yearChanged()">
+            <option value="">Select Year</option>
+            <option value="BCA-I">BCA-I</option>
+            <option value="BCA-II">BCA-II</option>
+            <option value="BCA-III">BCA-III</option>
+        </select>
+
+       <div id="streamBox" class="hidden"> <label>Stream</label> 
+           <select id="studentStream"> 
+               <option value="">Select Stream</option> 
+               <option value="AI">AI</option>
+               <option value="DS">DS</option> 
+           </select> 
+       </div>
+
+        <div class="view-toggle">
+            <button id="studentBtnDaily" class="active" onclick="setStudentView('daily')">Daily Schedule</button>
+            <button id="studentBtnWeekly" onclick="setStudentView('weekly')">Weekly Schedule</button>
+        </div>
+
+        <div id="studentDateBox">
+            <label>Select Date</label>
+            <input type="date" id="studentDate" onchange="loadStudentTimetableDisplay()">
+        </div>
+
+        <button onclick="loadStudentTimetableDisplay()">Show Timetable</button>
+        <button class="back" onclick="goHome()">Back</button>
+
+        <div id="studentResult"></div>
+    </div>
+
+    <div id="teacher" class="card hidden">
+        <h2>👨‍🏫 Teacher Portal</h2>
+        <label>Select Teacher</label>
+        <select id="teacherSelect" onchange="teacherSelectionChanged()">
+            <option value="">Select Teacher</option>
+        </select>
+
+        <div class="view-toggle">
+            <button id="teacherBtnDaily" class="active" onclick="setTeacherView('daily')">Daily Schedule</button>
+            <button id="teacherBtnWeekly" onclick="setTeacherView('weekly')">Weekly Schedule</button>
+            <button id="teacherBtnAvailability" onclick="setTeacherView('availability')">🔍 When Are Students Free?</button>
+        </div>
+
+        <div id="teacherDateBox">
+            <label>Select Date</label>
+            <input type="date" id="teacherDate" onchange="loadTeacherTimetableDisplay()">
+        </div>
+
+        <div id="teacherAvailabilityBox" class="hidden">
+            <label>Select Date to Check Free Student Groups</label>
+            <input type="date" id="teacherCheckDate" onchange="checkTeacherAvailability()">
+        </div>
+
+        <button id="teacherActionBtn" onclick="loadTeacherTimetableDisplay()">Show Timetable</button>
+        <button class="back" onclick="goHome()">Back</button>
+
+        <div id="teacherResult"></div>
+    </div>
+
+    <div id="adminLogin" class="card hidden">
+        <h2>🔐 Admin Login</h2>
+        <label>Admin ID</label>
+        <input id="adminId" placeholder="Enter Admin ID">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter Password">
+
+        <button onclick="adminLogin()">Login</button>
+        <button class="back" onclick="goHome()">Back</button>
+
+        <p id="loginMsg"></p>
+    </div>
+
+    <div id="adminPanel" class="card admin-shell hidden">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <span class="sidebar-brand-mark">BCA</span>
+                <div><strong>Admin Portal</strong><small>Timetable Management</small></div>
+            </div>
+            <nav class="admin-nav" aria-label="Admin menu">
+                <button class="admin-nav-item active" data-admin-view="dashboard" onclick="setAdminView('dashboard')"><span>⌂</span>Dashboard</button>
+                <button class="admin-nav-item" data-admin-view="classTimetable" onclick="setAdminView('classTimetable')"><span>▦</span>Class-wise Timetable</button>
+                <button class="admin-nav-item" data-admin-view="teacherTimetable" onclick="setAdminView('teacherTimetable')"><span>♧</span>Teacher-wise Timetable</button>
+                <button class="admin-nav-item" data-admin-view="addLecture" onclick="openAdminAddLecture()"><span>＋</span>Add Lecture</button>
+                <button class="admin-nav-item" data-admin-view="editLecture" onclick="setAdminView('editLecture')"><span>✎</span>Edit Lecture</button>
+                <button class="admin-nav-item" data-admin-view="deleteLecture" onclick="setAdminView('deleteLecture')"><span>−</span>Delete Lecture</button>
+                <button class="admin-nav-item" data-admin-view="subjectAllocation" onclick="setAdminView('subjectAllocation')"><span>≡</span>Subject Allocation</button>
+            </nav>
+            <button class="admin-logout" onclick="goHome()">← Back to Home</button>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <div><span class="eyebrow">ADMINISTRATION</span><h1 id="adminViewTitle">Dashboard</h1></div>
+                <span class="admin-user-badge">Admin</span>
+            </div>
+
+            <section id="adminViewDashboard" class="admin-view">
+                <div class="dashboard-welcome">
+                    <div><span class="eyebrow">OVERVIEW</span><h2>Welcome to your dashboard</h2><p>Manage classes, teachers, lectures, and subject allocations from one place.</p></div>
+                    <span class="welcome-icon">▦</span>
+                </div>
+                <div class="dashboard-stats">
+                    <div class="dashboard-stat"><span>Total Lectures</span><strong id="adminStatLectures">0</strong><small>In the timetable</small></div>
+                    <div class="dashboard-stat"><span>Teachers</span><strong id="adminStatTeachers">0</strong><small>With scheduled classes</small></div>
+                    <div class="dashboard-stat"><span>Class Groups</span><strong id="adminStatClasses">0</strong><small>Across all BCA years</small></div>
+                    <div class="dashboard-stat"><span>Rooms</span><strong id="adminStatRooms">0</strong><small>Available in the system</small></div>
+                </div>
+                <div class="admin-box">
+                    <h3>Live Availability Finder</h3>
+                    <p class="section-description">See free teachers, student groups, and rooms alongside current occupants.</p>
+                    <div class="filter-row">
+                        <div>
+                            <label>Check Availability For</label>
+                            <select id="adminAvailabilityMode" onchange="updateAdminAvailabilityFilters()">
+                                <option value="date">Specific Date</option>
+                                <option value="day">Specific Day</option>
+                                <option value="all">All Days</option>
+                            </select>
+                        </div>
+                        <div id="adminAvailabilityDateFilter">
+                            <label>Select Date</label>
+                            <input type="date" id="adminCheckDate" onchange="runAdminAvailabilityCheck()">
+                        </div>
+                        <div id="adminAvailabilityDayFilter" class="hidden">
+                            <label>Select Day</label>
+                            <select id="adminCheckDay" onchange="runAdminAvailabilityCheck()">
+                                <option value="">Select Day</option>
+                                <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+                                <option>Thursday</option><option>Friday</option><option>Saturday</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Filter by Year</label>
+                            <select id="adminAvailabilityYear" onchange="runAdminAvailabilityCheck()">
+                                <option value="">All Years</option><option value="BCA-I">BCA I</option>
+                                <option value="BCA-II">BCA II</option><option value="BCA-III">BCA III</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Filter by Stream</label>
+                            <select id="adminAvailabilityStream" onchange="runAdminAvailabilityCheck()">
+                                <option value="">All Streams</option><option value="AI">AI</option><option value="DS">DS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Check Specific Room</label>
+                            <select id="adminCheckRoom" onchange="runAdminAvailabilityCheck()"><option value="">All Rooms</option></select>
+                        </div>
+                    </div>
+                    <div id="adminAvailabilityResult" class="availability-result"></div>
+                </div>
+                <div class="admin-box">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button onclick="openAdminAddLecture()">＋ Add a lecture</button>
+                        <button onclick="setAdminView('classTimetable')">View class timetable</button>
+                        <button onclick="setAdminView('teacherTimetable')">View teacher timetable</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="adminViewClassTimetable" class="admin-view hidden">
+                <div class="admin-box">
+                    <h3>Class-wise Timetable</h3>
+                    <div class="filter-row">
+                        <div><label>Filter by Year</label><select id="adminClassYear" onchange="renderClassTimetable()"><option value="">All Years</option><option value="BCA-I">BCA I</option><option value="BCA-II">BCA II</option><option value="BCA-III">BCA III</option></select></div>
+                        <div><label>Filter by Stream</label><select id="adminClassStream" onchange="renderClassTimetable()"><option value="">All Streams</option><option value="AI">AI</option><option value="DS">DS</option></select></div>
+                        <div><label>Select Day</label><select id="adminClassDay" onchange="renderClassTimetable()"><option value="">All Days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+                    </div>
+                    <div id="adminClassTimetableData"></div>
+                </div>
+            </section>
+
+            <section id="adminViewTeacherTimetable" class="admin-view hidden">
+                <div class="admin-box">
+                    <h3>Teacher-wise Timetable</h3>
+                    <div class="filter-row">
+                        <div><label>Select Teacher</label><select id="adminTeacherSelect" onchange="renderTeacherTimetable()"><option value="">All Teachers</option></select></div>
+                        <div><label>Select Day</label><select id="adminTeacherDay" onchange="renderTeacherTimetable()"><option value="">All Days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+                    </div>
+                    <div id="adminTeacherTimetableData"></div>
+                </div>
+            </section>
+
+            <section id="adminViewAddLecture" class="admin-view hidden">
+                <div class="admin-box form-box">
+                    <h3 id="adminLectureFormTitle">Add Lecture</h3>
+                    <p class="section-description">Choose the class, day, time, subject, and room. Teacher assignment is fixed when editing an existing lecture.</p>
+                    <input type="hidden" id="editIndex" value="-1">
+                    <div class="admin-form-grid">
+                        <div><label>Day</label><select id="aDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+                        <div><label>Class</label><select id="aClass"><option>BCA-I</option><option>BCA-II</option><option>BCA-III (AI)</option><option>BCA-III (DS)</option></select></div>
+                        <div><label>Time</label><select id="aTime"></select></div>
+                        <div><label>Subject</label><input id="aSubject" placeholder="Example: Java"></div>
+                        <div><label>Teacher (fixed when editing)</label><input id="aTeacher" placeholder="Example: NPT"></div>
+                        <div><label>Room</label><select id="aRoom"><option>Room 6</option><option>Smart Room</option><option>BCA Lab</option></select></div>
+                    </div>
+                    <div id="adminAlertContainer"></div>
+                    <button class="primary-action" onclick="saveLecture()">Save Lecture</button>
+                    <button class="secondary-action" onclick="resetForm()">Cancel / Clear</button>
+                </div>
+            </section>
+
+            <section id="adminViewEditLecture" class="admin-view hidden">
+                <div class="admin-box">
+                    <h3>Edit Lecture</h3>
+                    <p class="section-description">Select a lecture to edit its class, day, time, subject, or room. Teacher assignment remains fixed.</p>
+                    <div class="filter-row">
+                        <div><label>Filter by Year</label><select id="filterYear" onchange="loadAdminTable()"><option value="">All Years</option><option value="BCA-I">BCA I</option><option value="BCA-II">BCA II</option><option value="BCA-III">BCA III</option></select></div>
+                        <div><label>Filter by Teacher</label><select id="filterTeacher" onchange="loadAdminTable()"><option value="">All Teachers</option></select></div>
+                        <div><label>Filter by Day</label><select id="filterDay" onchange="loadAdminTable()"><option value="">All Days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+                    </div>
+                    <div id="adminEditData"></div>
+                </div>
+            </section>
+
+            <section id="adminViewDeleteLecture" class="admin-view hidden">
+                <div class="admin-box">
+                    <h3>Delete Lecture</h3>
+                    <p class="section-description">Review the timetable entry before removing it.</p>
+                    <div id="adminDeleteData"></div>
+                </div>
+            </section>
+
+            <section id="adminViewSubjectAllocation" class="admin-view hidden">
+                <div class="admin-box">
+                    <h3>Subject Allocation</h3>
+                    <p class="section-description">Review each subject’s assigned class group and fixed teacher.</p>
+                    <div class="filter-row">
+                        <div><label>Filter by Class</label><select id="adminAllocationClass" onchange="renderSubjectAllocations()"><option value="">All Classes</option></select></div>
+                        <div><label>Filter by Subject</label><select id="adminAllocationSubject" onchange="renderSubjectAllocations()"><option value="">All Subjects</option></select></div>
+                    </div>
+                    <div id="adminSubjectAllocationData"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</div>
+
+<script src="javascript.js"></script>
+</body>
+</html>
